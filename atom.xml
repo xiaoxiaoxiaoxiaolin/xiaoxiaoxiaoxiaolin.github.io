@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>小晓晓晓林</title>
   
-  <subtitle>我们的征途是星辰大海</subtitle>
+  
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xiaoxiaoxiaoxiaolin.github.io/"/>
@@ -10,7 +10,7 @@
   <id>https://xiaoxiaoxiaoxiaolin.github.io/</id>
   
   <author>
-    <name>xiaoxiaoxiaoxiaolin</name>
+    <name>L</name>
     
   </author>
   
