@@ -1204,6 +1204,13 @@ pre .javascript .function {
   word-wrap: break-word;
   font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
 }
+.post {
+  margin-top: 60px;
+  margin-bottom: 60px;
+  padding: 25px;
+  -webkit-box-shadow: 0 0 5px rgba(202,203,203,0.5);
+  -moz-box-shadow: 0 0 5px rgba(202,203,204,0.5);
+}
 .post-body p a {
   color: #0593d3;
   border-bottom: none;
@@ -1249,9 +1256,6 @@ pre .javascript .function {
 }
 .use-motion .collection-title {
   opacity: 0;
-}
-.posts-expand {
-  padding-top: 40px;
 }
 @media (max-width: 767px) {
   .posts-expand {
@@ -1797,7 +1801,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #57811d;
+  background: #66c336;
 }
 .feed-link,
 .chat {
