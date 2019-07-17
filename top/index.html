@@ -109,17 +109,17 @@
   daovoice('update');
   </script>
 
-  <meta name="description" content="琅琊榜首，江左梅郎   AV.initialize(&quot;XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va&quot;, &quot;T6DpDouJtaUHt3WMcHqcCrxD&quot;);    var num=30   var time=0   var title=&quot;&quot;   var url=&quot;&quot;   var query = new AV.Query(&apos;Counter&apos;);   query.notEqu">
+  <meta name="description" content="琅琊榜首，江左梅郎   AV.initialize(&quot;XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va&quot;, &quot;T6DpDouJtaUHt3WMcHqcCrxD&quot;);    var time=0   var title=&quot;&quot;   var url=&quot;&quot;   var query = new AV.Query(&apos;Counter&apos;);   query.notEqualTo(&apos;id&apos;,0);">
 <meta property="og:type" content="website">
 <meta property="og:title" content="阅读榜">
 <meta property="og:url" content="https://xiaoxiaoxiaoxiaolin.github.io/top/index.html">
 <meta property="og:site_name" content="小晓晓晓林">
-<meta property="og:description" content="琅琊榜首，江左梅郎   AV.initialize(&quot;XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va&quot;, &quot;T6DpDouJtaUHt3WMcHqcCrxD&quot;);    var num=30   var time=0   var title=&quot;&quot;   var url=&quot;&quot;   var query = new AV.Query(&apos;Counter&apos;);   query.notEqu">
+<meta property="og:description" content="琅琊榜首，江左梅郎   AV.initialize(&quot;XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va&quot;, &quot;T6DpDouJtaUHt3WMcHqcCrxD&quot;);    var time=0   var title=&quot;&quot;   var url=&quot;&quot;   var query = new AV.Query(&apos;Counter&apos;);   query.notEqualTo(&apos;id&apos;,0);">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-17T14:46:40.327Z">
+<meta property="og:updated_time" content="2019-07-17T15:12:08.837Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="阅读榜">
-<meta name="twitter:description" content="琅琊榜首，江左梅郎   AV.initialize(&quot;XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va&quot;, &quot;T6DpDouJtaUHt3WMcHqcCrxD&quot;);    var num=30   var time=0   var title=&quot;&quot;   var url=&quot;&quot;   var query = new AV.Query(&apos;Counter&apos;);   query.notEqu">
+<meta name="twitter:description" content="琅琊榜首，江左梅郎   AV.initialize(&quot;XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va&quot;, &quot;T6DpDouJtaUHt3WMcHqcCrxD&quot;);    var time=0   var title=&quot;&quot;   var url=&quot;&quot;   var query = new AV.Query(&apos;Counter&apos;);   query.notEqualTo(&apos;id&apos;,0);">
 
 
 
@@ -447,25 +447,25 @@
         
           <blockquote class="blockquote-center">琅琊榜首，江左梅郎</blockquote>
 <div id="top"></div>
-<script src="//dp2px.com/demo/av-min.js"></script>
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
 <script>AV.initialize("XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va", "T6DpDouJtaUHt3WMcHqcCrxD");</script>
 <script type="text/javascript">
-  var num=30
   var time=0
   var title=""
   var url=""
   var query = new AV.Query('Counter');
-  query.notEqualTo('id',0); 
-  query.descending('time'); 
-  query.limit(num); 
+  query.notEqualTo('id',0);
+  query.descending('time');
+  query.limit(1000);
   query.find().then(function (todo) {
-    for (var i=0;i<num;i++){ 
+    for (var i=0;i<1000;i++){
       var result=todo[i].attributes;
-      time=result.time; 
-      title=result.title; 
-      url=result.url;  
-      var content="<p>"+"<font color='#e20404'>"+"热度"+time+"℃"+"："+"<a href='"+"https://xiaoxiaoxiaoxiaolin.github.io"+url+"'>"+title+"</font>"+"</a>"+"</p>";
-      document.getElementById("hits").innerHTML+=content
+      time=result.time;
+      title=result.title;
+      url=result.url;
+      // var content="<a href='"+"https://hoxis.github.io"+url+"'>"+title+"</a>"+"<br>"+"<font color='#fff'>"+"阅读次数："+time+"</font>"+"<br><br>";
+      var content="<p>"+"<font color='#1C1C1C'>"+"【文章热度:"+time+"℃】"+"</font>"+"<a href='"+"https://xiaoxiaoxiaoxiaolin.github.io"+url+"'>"+title+"</a>"+"</p>";
+      document.getElementById("top").innerHTML+=content
     }
   }, function (error) {
     console.log("error");
