@@ -1482,7 +1482,7 @@ pre .javascript .function {
   margin-top: 2px;
 }
 .posts-expand .post-meta time {
-  border-bottom: 1px dashed #999;
+  border-bottom: 0px dashed #999;
   cursor: help;
 }
 .post-meta-divider {
@@ -1801,7 +1801,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #3dff24;
+  background: #220841;
 }
 .feed-link,
 .chat {
