@@ -1310,10 +1310,11 @@ pre .javascript .function {
   visibility: visible;
 }
 .posts-expand .post-body img {
-  box-sizing: border-box;
+  border: none;
+  border: 0px;
+}
+.posts-expand .post-body .fancybox img {
   margin: 0 auto 25px;
-  padding: 3px;
-  border: 1px solid #ddd;
 }
 @media (max-width: 767px) {
   .posts-collapse {
@@ -1804,7 +1805,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #dbed32;
+  background: #54b4ff;
 }
 .feed-link,
 .chat {
