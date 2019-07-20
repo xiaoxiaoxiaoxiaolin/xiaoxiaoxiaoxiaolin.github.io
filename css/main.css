@@ -273,15 +273,15 @@ span.exturl {
   overflow-wrap: break-word;
   word-wrap: break-word;
   background-color: transparent;
-  color: #555;
+  color: #999;
   text-decoration: none;
   outline: none;
-  border-bottom: 1px solid #999;
+  border-bottom: 0px solid #999;
   cursor: pointer;
 }
 a:hover,
 span.exturl:hover {
-  color: #222;
+  color: #0684bd;
   border-bottom-color: #222;
 }
 video {
@@ -1205,7 +1205,7 @@ pre .javascript .function {
   font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 .post {
-  margin-top: 60px;
+  margin-top: 0px;
   margin-bottom: 60px;
   padding: 25px;
   -webkit-box-shadow: 0 0 5px rgba(202,203,203,0.5);
@@ -1804,7 +1804,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ffacff;
+  background: #dbed32;
 }
 .feed-link,
 .chat {
@@ -2734,9 +2734,6 @@ ul.breadcrumb li+li:last-child {
 }
 .sidebar-inner.affix-bottom {
   position: absolute;
-}
-.site-overview {
-  text-align: left;
 }
 .site-author::before,
 .site-author::after {
