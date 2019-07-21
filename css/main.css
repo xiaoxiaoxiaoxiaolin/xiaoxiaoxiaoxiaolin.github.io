@@ -1442,7 +1442,6 @@ pre .javascript .function {
   overflow-wrap: break-word;
   word-wrap: break-word;
   text-align: center;
-  font-weight: 400;
 }
 .posts-expand .post-title-link {
   display: inline-block;
@@ -1805,7 +1804,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #bff;
+  background: #42ffff;
 }
 .feed-link,
 .chat {
