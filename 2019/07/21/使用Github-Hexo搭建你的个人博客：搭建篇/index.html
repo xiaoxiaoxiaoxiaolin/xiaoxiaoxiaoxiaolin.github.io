@@ -693,12 +693,6 @@
     <div>
         
             
-        
-    </div>
-
-    <div>
-        
-            
 <div class="my_post_copyright">
   <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
   
@@ -729,6 +723,53 @@
     }));  
 </script>
 
+        
+    </div>
+
+    <div>
+        
+            <div>
+    
+    <br><br>
+    <p id="top">
+    <font size="4">热门文章推荐：<br></font>
+    </p>
+    <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+
+    <script>AV.initialize("XMCuiFsYYsbUlDih3XM5LI6F-9Nh9j0Va", "T6DpDouJtaUHt3WMcHqcCrxD");</script>
+    <script type="text/javascript">
+      
+      var num=30 //最终只返回n条结果
+      var time=0
+      var title=""
+      var url=""
+      var query = new AV.Query('Counter');//表名
+      query.notEqualTo('id',0); //id不为0的结果
+      query.descending('time'); //结果按阅读次数降序排序
+      query.limit(num);  
+      query.find().then(function (todo) {
+        for (var i=0;i<num;i++){ 
+          // console.log(todo[i]);
+          var result=todo[i].attributes;
+          time=result.time;  //阅读次数
+          title=result.title; //文章标题
+          url=result.url;     //文章url
+          // console.log(title);
+          // console.log(url);
+          // console.log(time);
+          if (i%2==0){
+            var content="<div style='display:inline;float:left;'>【热度"+time+"℃】"+" : "+"<a href='"+"https://xiaoxiaoxiaoxiaolin.github.io"+url+"'>"+"<font color='#0477ab'>"+title+"</font>"+"</a></div>";
+          }else{
+            var content="<div style='display:inline;float:right;'><a href='"+"https://xiaoxiaoxiaoxiaolin.github.io"+url+"'>"+"<font color='#0477ab'>"+title+"</font>"+" : "+"</a>【热度"+time+"℃】"+"</div><br>";
+          }
+          document.getElementById("top").innerHTML+=content
+        }
+      }, function (error) {
+        console.log("error");
+      });
+    </script>
+    
+</div>
         
     </div>
 
